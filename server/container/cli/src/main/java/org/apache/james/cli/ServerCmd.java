@@ -38,17 +38,14 @@ import org.apache.james.cli.exceptions.InvalidArgumentNumberException;
 import org.apache.james.cli.exceptions.JamesCliException;
 import org.apache.james.cli.exceptions.MissingCommandException;
 import org.apache.james.cli.exceptions.UnrecognizedCommandException;
-import org.apache.james.cli.probe.impl.JmxConnection;
-import org.apache.james.cli.probe.impl.JmxDataProbe;
-import org.apache.james.cli.probe.impl.JmxMailboxProbe;
-import org.apache.james.cli.probe.impl.JmxQuotaProbe;
-import org.apache.james.cli.probe.impl.JmxSieveProbe;
+import org.apache.james.cli.probe.impl.*;
 import org.apache.james.cli.type.CmdType;
 import org.apache.james.core.quota.QuotaCount;
 import org.apache.james.core.quota.QuotaSize;
 import org.apache.james.core.quota.QuotaValue;
 import org.apache.james.mailbox.store.mail.model.SerializableQuota;
 import org.apache.james.mailbox.store.mail.model.SerializableQuotaValue;
+import org.apache.james.mailbox.store.probe.MailReprocessingProbe;
 import org.apache.james.mailbox.store.probe.MailboxProbe;
 import org.apache.james.mailbox.store.probe.QuotaProbe;
 import org.apache.james.mailbox.store.probe.SieveProbe;
@@ -118,7 +115,8 @@ public class ServerCmd {
                 new JmxDataProbe().connect(jmxConnection),
                 new JmxMailboxProbe().connect(jmxConnection),
                 new JmxQuotaProbe().connect(jmxConnection),
-                new JmxSieveProbe().connect(jmxConnection)
+                new JmxSieveProbe().connect(jmxConnection),
+                new JMXMailReprocessingProbe().connect(jmxConnection)
             )
             .executeCommandLine(cmd, printStream);
         stopWatch.split();
@@ -132,12 +130,14 @@ public class ServerCmd {
     private final MailboxProbe mailboxProbe;
     private final QuotaProbe quotaProbe;
     private final SieveProbe sieveProbe;
-    
-    public ServerCmd(DataProbe probe, MailboxProbe mailboxProbe, QuotaProbe quotaProbe, SieveProbe sieveProbe) {
+    private final MailReprocessingProbe mailReprocessingProbe;
+
+    public ServerCmd(DataProbe probe, MailboxProbe mailboxProbe, QuotaProbe quotaProbe, SieveProbe sieveProbe, MailReprocessingProbe mailReprocessingProbe) {
         this.probe = probe;
         this.mailboxProbe = mailboxProbe;
         this.quotaProbe = quotaProbe;
         this.sieveProbe = sieveProbe;
+        this.mailReprocessingProbe = mailReprocessingProbe;
     }
     
     @VisibleForTesting
@@ -304,6 +304,9 @@ public class ServerCmd {
             break;
         case GETGLOBALMAXMESSAGECOUNTQUOTA:
             printStream.println("Global Maximum message count Quota: " + formatMessageValue(quotaProbe.getGlobalMaxMessageCount()));
+            break;
+        case LISTMAILREPOSITORY:
+            mailReprocessingProbe.listMailRepository();
             break;
         case REINDEXMAILBOX:
             mailboxProbe.reIndexMailbox(arguments[1], arguments[2], arguments[3]);
