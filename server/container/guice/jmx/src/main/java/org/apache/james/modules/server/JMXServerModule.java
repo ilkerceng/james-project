@@ -23,15 +23,7 @@ import java.io.FileNotFoundException;
 import java.util.List;
 
 import org.apache.commons.configuration.ConfigurationException;
-import org.apache.james.adapter.mailbox.MailboxCopierManagement;
-import org.apache.james.adapter.mailbox.MailboxCopierManagementMBean;
-import org.apache.james.adapter.mailbox.MailboxManagerManagement;
-import org.apache.james.adapter.mailbox.MailboxManagerManagementMBean;
-import org.apache.james.adapter.mailbox.MailboxManagerResolver;
-import org.apache.james.adapter.mailbox.QuotaManagement;
-import org.apache.james.adapter.mailbox.QuotaManagementMBean;
-import org.apache.james.adapter.mailbox.ReIndexerManagement;
-import org.apache.james.adapter.mailbox.ReIndexerManagementMBean;
+import org.apache.james.adapter.mailbox.*;
 import org.apache.james.domainlist.api.DomainListManagementMBean;
 import org.apache.james.domainlist.lib.DomainListManagement;
 import org.apache.james.lifecycle.api.Configurable;
@@ -74,6 +66,7 @@ public class JMXServerModule extends AbstractModule {
     private static final String JMX_COMPONENT_REINDEXER = "org.apache.james:type=component,name=reindexerbean";
     private static final String JMX_COMPONENT_QUOTA = "org.apache.james:type=component,name=quotamanagerbean";
     private static final String JMX_COMPONENT_SIEVE = "org.apache.james:type=component,name=sievemanagerbean";
+    private static final String JMX_COMPONENT_MAILREPROCESSINGMANAGEMENTBEAN = "org.apache.james:type=component,name=mailreprocessingmanagementbean";
 
     @Override
     protected void configure() {
@@ -85,6 +78,7 @@ public class JMXServerModule extends AbstractModule {
         bind(DomainListManagement.class).in(Scopes.SINGLETON);
         bind(MailboxCopierManagement.class).in(Scopes.SINGLETON);
         bind(SieveRepositoryManagement.class).in(Scopes.SINGLETON);
+        bind(MailReprocessingManagement.class).in(Scopes.SINGLETON);
 
         bind(MailboxCopier.class).annotatedWith(Names.named("mailboxcopier")).to(MailboxCopierImpl.class);
         bind(MailboxCopierManagementMBean.class).to(MailboxCopierManagement.class);
@@ -98,6 +92,7 @@ public class JMXServerModule extends AbstractModule {
         bind(ReIndexerManagementMBean.class).to(ReIndexerManagement.class);
         bind(QuotaManagementMBean.class).to(QuotaManagement.class);
         bind(SieveRepositoryManagementMBean.class).to(SieveRepositoryManagement.class);
+        bind(MailReprocessingManagementMBean.class).to(MailReprocessingManagement.class);
         Multibinder<ConfigurationPerformer> configurationMultibinder = Multibinder.newSetBinder(binder(), ConfigurationPerformer.class);
         configurationMultibinder.addBinding().to(JMXModuleConfigurationPerformer.class);
     }
@@ -125,6 +120,7 @@ public class JMXServerModule extends AbstractModule {
         private final ReIndexerManagementMBean reIndexerManagementMBean;
         private final QuotaManagementMBean quotaManagementMBean;
         private final SieveRepositoryManagementMBean sieveRepositoryManagementMBean;
+        private final MailReprocessingManagementMBean mailReprocessingManagementMBean;
 
         @Inject
         public JMXModuleConfigurationPerformer(JMXServer jmxServer,
@@ -135,7 +131,8 @@ public class JMXServerModule extends AbstractModule {
                                                MailboxCopierManagementMBean mailboxCopierManagementMBean,
                                                ReIndexerManagementMBean reIndexerManagementMBean,
                                                QuotaManagementMBean quotaManagementMBean,
-                                               SieveRepositoryManagementMBean sieveRepositoryManagementMBean) {
+                                               SieveRepositoryManagementMBean sieveRepositoryManagementMBean,
+                                               MailReprocessingManagementMBean mailReprocessingManagementMBean) {
             this.jmxServer = jmxServer;
             this.domainListManagementMBean = domainListManagementMBean;
             this.usersRepositoryManagementMBean = usersRepositoryManagementMBean;
@@ -145,6 +142,7 @@ public class JMXServerModule extends AbstractModule {
             this.reIndexerManagementMBean = reIndexerManagementMBean;
             this.quotaManagementMBean = quotaManagementMBean;
             this.sieveRepositoryManagementMBean = sieveRepositoryManagementMBean;
+            this.mailReprocessingManagementMBean = mailReprocessingManagementMBean;
         }
 
         @Override
@@ -159,6 +157,8 @@ public class JMXServerModule extends AbstractModule {
                 jmxServer.register(JMX_COMPONENT_REINDEXER, reIndexerManagementMBean);
                 jmxServer.register(JMX_COMPONENT_QUOTA, quotaManagementMBean);
                 jmxServer.register(JMX_COMPONENT_SIEVE, sieveRepositoryManagementMBean);
+                jmxServer.register(JMX_COMPONENT_SIEVE, sieveRepositoryManagementMBean);
+                jmxServer.register(JMX_COMPONENT_MAILREPROCESSINGMANAGEMENTBEAN, mailReprocessingManagementMBean);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
