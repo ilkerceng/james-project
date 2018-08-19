@@ -39,6 +39,7 @@ import org.apache.james.core.quota.QuotaSize;
 import org.apache.james.mailbox.model.MailboxId;
 import org.apache.james.mailbox.store.mail.model.SerializableQuota;
 import org.apache.james.mailbox.store.mail.model.SerializableQuotaValue;
+import org.apache.james.mailbox.store.probe.MailReprocessingProbe;
 import org.apache.james.mailbox.store.probe.MailboxProbe;
 import org.apache.james.mailbox.store.probe.QuotaProbe;
 import org.apache.james.mailbox.store.probe.SieveProbe;
@@ -57,6 +58,7 @@ public class ServerCmdTest {
     private MailboxProbe mailboxProbe;
     private QuotaProbe quotaProbe;
     private SieveProbe sieveProbe;
+    private MailReprocessingProbe mailReprocessingProbe;
 
     private ServerCmd testee;
 
@@ -66,7 +68,8 @@ public class ServerCmdTest {
         mailboxProbe = mock(MailboxProbe.class);
         quotaProbe = mock(QuotaProbe.class);
         sieveProbe = mock(SieveProbe.class);
-        testee = new ServerCmd(dataProbe, mailboxProbe, quotaProbe, sieveProbe);
+        mailReprocessingProbe = mock(MailReprocessingProbe.class);
+        testee = new ServerCmd(dataProbe, mailboxProbe, quotaProbe, sieveProbe, mailReprocessingProbe);
     }
 
     @Test
@@ -468,6 +471,16 @@ public class ServerCmdTest {
         CommandLine commandLine = ServerCmd.parseCommandLine(arguments);
 
         when(quotaProbe.getMaxMessageCount(quotaroot)).thenReturn(new SerializableQuotaValue<>(QuotaCount.unlimited()));
+
+        testee.executeCommandLine(commandLine);
+    }
+
+    @Test
+    public void listMailRepositoryCommandShouldWork() throws Exception {
+        String[] arguments = { "-h", "127.0.0.1", "-p", "9999", CmdType.LISTMAILREPOSITORY.getCommand()};
+        CommandLine commandLine = ServerCmd.parseCommandLine(arguments);
+
+        when(mailReprocessingProbe.listMailRepository()).thenReturn(new String[]{"mailRepositoryPath1", "mailRepositoryPath2"});
 
         testee.executeCommandLine(commandLine);
     }
