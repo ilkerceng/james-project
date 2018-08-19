@@ -49,6 +49,7 @@ public enum CmdType {
     GETQUOTAROOT("GetQuotaroot", "namespace", "user", "name"),
     GETMAXSTORAGEQUOTA("GetMaxStorageQuota", "quotaroot"),
     GETMAXMESSAGECOUNTQUOTA("GetMaxMessageCountQuota", "quotaroot"),
+    LISTMAILREPOSITORY("ListMailRepository"),
     SETMAXSTORAGEQUOTA("SetMaxStorageQuota", "quotaroot", "maxMessageCount"),
     SETMAXMESSAGECOUNTQUOTA("SetMaxMessageCountQuota", "quotaroot", "maxStorage"),
     SETGLOBALMAXSTORAGEQUOTA("SetGlobalMaxStorageQuota", "maxStorage"),
