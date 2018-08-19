@@ -267,6 +267,7 @@
                 <entry key="org.apache.james:type=component,name=quotamanagerbean" value-ref="quotamanagermanagement"/>
                 <entry key="org.apache.james:type=component,name=reindexerbean" value-ref="reindexermanagement"/>
                 <entry key="org.apache.james:type=component,name=sievemanagerbean" value-ref="sievemanagerbean"/>
+                <entry key="org.apache.james:type=component,name=mailreprocessingmanagerbean" value-ref="mailreprocessingmanagement"/>
             </map>
         </property>
         <property name="assembler">
@@ -287,6 +288,8 @@
     <bean id="quotamanagermanagement" class="org.apache.james.adapter.mailbox.QuotaManagement"/>
     <bean id="reindexermanagement" class="org.apache.james.adapter.mailbox.ReIndexerManagement"/>
     <bean id="sievemanagerbean" class="org.apache.james.sieverepository.lib.SieveRepositoryManagement"/>
+    <bean id="mailreprocessingmanagement" class="org.apache.james.adapter.mailbox.MailReprocessingManagement"/>
+
     <!--
         <bean id="james23importermanagement" class="org.apache.james.container.spring.tool.James23ImporterManagement" />
     -->
