@@ -185,6 +185,11 @@ public class CmdTypeTest {
     }
 
     @Test
+    public void lookupListMailRepositoryShouldReturnEnumValue() {
+        assertThat(CmdType.lookup("listmailrepository")).isEqualTo(CmdType.LISTMAILREPOSITORY);
+    }
+
+    @Test
     public void lookupGetStorageQuotaShouldReturnEnumValue() {
         assertThat(CmdType.lookup("getstoragequota")).isEqualTo(CmdType.GETSTORAGEQUOTA);
     }
