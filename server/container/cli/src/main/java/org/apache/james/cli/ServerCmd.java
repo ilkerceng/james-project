@@ -305,8 +305,26 @@ public class ServerCmd {
         case GETGLOBALMAXMESSAGECOUNTQUOTA:
             printStream.println("Global Maximum message count Quota: " + formatMessageValue(quotaProbe.getGlobalMaxMessageCount()));
             break;
-        case LISTMAILREPOSITORY:
-            mailReprocessingProbe.listMailRepository();
+        case LISTMAILREPOSITORIES:
+            mailReprocessingProbe.listMailRepositories();
+            break;
+        case LISTMAILSINREPOSITORY:
+            mailReprocessingProbe.listMailsInRepository(arguments[1]);
+            break;
+        case GETMAILINREPOSITORY:
+            mailReprocessingProbe.getMailInRepository(arguments[1], arguments[2]);
+            break;
+        case DELETEMAILINREPOSITORY:
+            mailReprocessingProbe.deleteMailInRepository(arguments[1], arguments[2]);
+            break;
+        case DELETEMAILSINREPOSITORY:
+            mailReprocessingProbe.deleteMailsInRepository(arguments[1]);
+            break;
+        case REPROCESSALLMAILS:
+            mailReprocessingProbe.reprocessAllMails(arguments[1]);
+            break;
+        case REPROCESSMAIL:
+            mailReprocessingProbe.reprocessMail(arguments[1], arguments[2]);
             break;
         case REINDEXMAILBOX:
             mailboxProbe.reIndexMailbox(arguments[1], arguments[2], arguments[3]);
