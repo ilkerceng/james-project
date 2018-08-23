@@ -19,10 +19,13 @@
 package org.apache.james.app.spring;
 
 import java.util.Calendar;
+import java.util.stream.Stream;
 
 import org.apache.commons.daemon.Daemon;
 import org.apache.commons.daemon.DaemonContext;
+import org.apache.james.container.spring.bean.factory.mailrepositorystore.MailRepositoryStoreBeanFactory;
 import org.apache.james.container.spring.context.JamesServerApplicationContext;
+import org.apache.james.mailrepository.api.MailRepositoryUrl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,7 +58,10 @@ public class JamesAppSpringMain implements Daemon {
     public void init(DaemonContext arg0) throws Exception {
         context = new JamesServerApplicationContext(new String[] { "META-INF/org/apache/james/spring-server.xml" });
         context.registerShutdownHook();
-        context.start();
+        MailRepositoryStoreBeanFactory mailRepositoryStoreBeanFactory = context.getBean(MailRepositoryStoreBeanFactory.class);
+        Stream<MailRepositoryUrl> urls = mailRepositoryStoreBeanFactory.getUrls();
+        urls.forEach(url -> System.out.println(url));
+//        context.start();
     }
 
     @Override
