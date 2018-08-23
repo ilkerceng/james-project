@@ -185,8 +185,38 @@ public class CmdTypeTest {
     }
 
     @Test
-    public void lookupListMailRepositoryShouldReturnEnumValue() {
-        assertThat(CmdType.lookup("listmailrepository")).isEqualTo(CmdType.LISTMAILREPOSITORY);
+    public void lookupListMailRepositoriesShouldReturnEnumValue() {
+        assertThat(CmdType.lookup("listmailrepositories")).isEqualTo(CmdType.LISTMAILREPOSITORIES);
+    }
+
+    @Test
+    public void lookupListMailsInRepositoryShouldReturnEnumValue() {
+        assertThat(CmdType.lookup("listmailsinrepository")).isEqualTo(CmdType.LISTMAILSINREPOSITORY);
+    }
+
+    @Test
+    public void lookupGetMailInRepositoryShouldReturnEnumValue() {
+        assertThat(CmdType.lookup("getmailinrepository")).isEqualTo(CmdType.GETMAILINREPOSITORY);
+    }
+
+    @Test
+    public void lookupDeleteMailInRepositoryShouldReturnEnumValue() {
+        assertThat(CmdType.lookup("deletemailinrepository")).isEqualTo(CmdType.DELETEMAILINREPOSITORY);
+    }
+
+    @Test
+    public void lookupDeleteMailsInRepositoryShouldReturnEnumValue() {
+        assertThat(CmdType.lookup("deletemailsinrepository")).isEqualTo(CmdType.DELETEMAILSINREPOSITORY);
+    }
+
+    @Test
+    public void lookupReprocessAllMailsShouldReturnEnumValue() {
+        assertThat(CmdType.lookup("reprocessallmails")).isEqualTo(CmdType.REPROCESSALLMAILS);
+    }
+
+    @Test
+    public void lookupReprocessMailShouldReturnEnumValue() {
+        assertThat(CmdType.lookup("reprocessmail")).isEqualTo(CmdType.REPROCESSMAIL);
     }
 
     @Test
