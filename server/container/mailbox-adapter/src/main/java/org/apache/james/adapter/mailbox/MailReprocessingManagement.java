@@ -1,19 +1,20 @@
 package org.apache.james.adapter.mailbox;
 
-import org.apache.james.mailrepository.api.MailRepositoryPath;
-import org.apache.james.mailrepository.api.MailRepositoryStore;
-import org.apache.james.mailrepository.api.MailRepositoryUrl;
+import org.apache.james.mailrepository.api.*;
+import org.apache.james.queue.api.MailQueue;
 import org.apache.james.queue.api.MailQueueFactory;
+import org.apache.mailet.Mail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.inject.Named;
-import javax.management.NotCompliantMBeanException;
-import javax.management.StandardMBean;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class MailReprocessingManagement extends StandardMBean implements MailReprocessingManagementMBean{
+public class MailReprocessingManagement implements MailReprocessingManagementMBean{
 
     /**
      * The Logger.
@@ -23,36 +24,109 @@ public class MailReprocessingManagement extends StandardMBean implements MailRep
     private MailQueueFactory mailQueueFactory;
     private MailRepositoryStore mailRepositoryStore;
 
-    public MailReprocessingManagement() throws NotCompliantMBeanException {
-        super(MailReprocessingManagementMBean.class);
-    }
-
     @Inject
-    public void setMailRepositoryStore(@Named("mailrepositorystore") MailRepositoryStore mailRepositoryStore) {
+    public MailReprocessingManagement(MailRepositoryStore mailRepositoryStore, MailQueueFactory mailQueueFactory) {
         this.mailRepositoryStore = mailRepositoryStore;
-    }
-
-    //    public void setMailRepositoryStore(MailRepositoryStore mailRepositoryStore) {
-//        this.mailRepositoryStore = mailRepositoryStore;
-//    }
-
-    public void setMailQueueFactory(MailQueueFactory mailQueueFactory) {
         this.mailQueueFactory = mailQueueFactory;
     }
 
     @Override
-    public void reprocessAllMails(String repositoryPath) {
-//        MailRepositoryPath mailRepositoryPath = new MailRepositoryPath(repositoryPath);
+    public void reprocessAllMails(String repositoryPath) throws Exception{
+        boolean hasRepositoryPathMatch = this.mailRepositoryStore.getPaths().anyMatch(path->path.asString().equals(repositoryPath));
+
+        if (hasRepositoryPathMatch){
+            MailQueue mailQueue = (MailQueue) (this.mailQueueFactory.listCreatedMailQueues().iterator().next());
+            if (mailQueue != null) {
+                Stream<MailRepository> foundMailRepositoryStream = this.mailRepositoryStore.getByPath(MailRepositoryPath.from(repositoryPath));
+                if(foundMailRepositoryStream != null) {
+                    MailRepository mailRepository = foundMailRepositoryStream.findFirst().get();
+                    Iterator<MailKey> mailKeyIterator = mailRepository.list();
+                    while (mailKeyIterator.hasNext()) {
+                        MailKey mailKey = mailKeyIterator.next();
+                        Mail mail = mailRepository.retrieve(mailKey);
+                        mailQueue.enQueue(mail);
+                    }
+                }
+            }
+        }
     }
 
     @Override
-    public void reprocessMail(String repositoryPath, String emailKey) {
+    public void reprocessMail(String repositoryPath, String emailKey) throws Exception {
+        boolean hasRepositoryPathMatch = this.mailRepositoryStore.getPaths().anyMatch(path->path.asString().equals(repositoryPath));
 
+        if (hasRepositoryPathMatch){
+            MailQueue mailQueue = (MailQueue) (this.mailQueueFactory.listCreatedMailQueues().iterator().next());
+            if (mailQueue != null) {
+                Stream<MailRepository> foundMailRepositoryStream = this.mailRepositoryStore.getByPath(MailRepositoryPath.from(repositoryPath));
+                if(foundMailRepositoryStream != null) {
+                    MailRepository mailRepository = foundMailRepositoryStream.findFirst().get();
+                    Iterator<MailKey> mailKeyIterator = mailRepository.list();
+                    while (mailKeyIterator.hasNext()) {
+                        MailKey mailKey = mailKeyIterator.next();
+                        if (mailKey.asString().equals(emailKey)) {
+                            Mail mail = mailRepository.retrieve(mailKey);
+                            mailQueue.enQueue(mail);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     @Override
-    public String[] listMailRepository() throws Exception {
-        String[] mailRepositoryPaths = this.mailRepositoryStore.getPaths().map(path -> path.asString()).toArray(String[]::new);
+    public List<String> listMailRepositories() throws Exception {
+        List<String> mailRepositoryPaths = this.mailRepositoryStore.getPaths().map(path -> path.asString()).collect(Collectors.toList());
         return mailRepositoryPaths;
+    }
+
+    @Override
+    public List<Mail> listMailsInRepository(String repositoryPath) throws Exception {
+        Stream<MailRepository> foundMailRepositoryStream = this.mailRepositoryStore.getByPath(MailRepositoryPath.from(repositoryPath));
+        List<Mail> mailList = null;
+        if(foundMailRepositoryStream != null) {
+            MailRepository mailRepository = foundMailRepositoryStream.findFirst().get();
+            Iterator<MailKey> mailKeyIterator = mailRepository.list();
+            mailList = new ArrayList<>();
+            while (mailKeyIterator.hasNext()) {
+                MailKey mailKey = mailKeyIterator.next();
+                Mail mail = mailRepository.retrieve(mailKey);
+                mailList.add(mail);
+            }
+        }
+
+        return mailList;
+    }
+
+    @Override
+    public Mail getMailInRepository(String repositoryPath, String emailKey) throws Exception {
+        Stream<MailRepository> foundMailRepositoryStream = this.mailRepositoryStore.getByPath(MailRepositoryPath.from(repositoryPath));
+        Mail mail = null;
+        if(foundMailRepositoryStream != null) {
+            MailRepository mailRepository = foundMailRepositoryStream.findFirst().get();
+            MailKey mailKey = new MailKey(emailKey);
+            mail = mailRepository.retrieve(mailKey);
+        }
+
+        return mail;
+    }
+
+    @Override
+    public void deleteMailInRepository(String repositoryPath, String emailKey) throws Exception {
+        Stream<MailRepository> foundMailRepositoryStream = this.mailRepositoryStore.getByPath(MailRepositoryPath.from(repositoryPath));
+        if(foundMailRepositoryStream != null) {
+            MailRepository mailRepository = foundMailRepositoryStream.findFirst().get();
+            MailKey mailKey = new MailKey(emailKey);
+            mailRepository.remove(mailKey);
+        }
+    }
+
+    @Override
+    public void deleteMailsInRepository(String repositoryPath) throws Exception {
+        Stream<MailRepository> foundMailRepositoryStream = this.mailRepositoryStore.getByPath(MailRepositoryPath.from(repositoryPath));
+        if(foundMailRepositoryStream != null) {
+            MailRepository mailRepository = foundMailRepositoryStream.findFirst().get();
+            mailRepository.removeAll();
+        }
     }
 }
