@@ -507,7 +507,6 @@ public class ServerCmdTest {
 
         FakeMail fakeMail1 = FakeMail.defaultFakeMail();
         FakeMail fakeMail2 = FakeMail.defaultFakeMail();
-
         List<Mail> mailList = new ArrayList<>();
         mailList.add(fakeMail1);
         mailList.add(fakeMail2);
