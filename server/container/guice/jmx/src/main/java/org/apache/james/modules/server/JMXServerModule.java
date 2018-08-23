@@ -23,7 +23,17 @@ import java.io.FileNotFoundException;
 import java.util.List;
 
 import org.apache.commons.configuration.ConfigurationException;
-import org.apache.james.adapter.mailbox.*;
+import org.apache.james.adapter.mailbox.MailReprocessingManagementMBean;
+import org.apache.james.adapter.mailbox.MailboxCopierManagement;
+import org.apache.james.adapter.mailbox.MailboxCopierManagementMBean;
+import org.apache.james.adapter.mailbox.MailboxManagerManagement;
+import org.apache.james.adapter.mailbox.MailboxManagerManagementMBean;
+import org.apache.james.adapter.mailbox.MailboxManagerResolver;
+import org.apache.james.adapter.mailbox.QuotaManagement;
+import org.apache.james.adapter.mailbox.QuotaManagementMBean;
+import org.apache.james.adapter.mailbox.ReIndexerManagement;
+import org.apache.james.adapter.mailbox.MailReprocessingManagement;
+import org.apache.james.adapter.mailbox.ReIndexerManagementMBean;
 import org.apache.james.domainlist.api.DomainListManagementMBean;
 import org.apache.james.domainlist.lib.DomainListManagement;
 import org.apache.james.lifecycle.api.Configurable;
