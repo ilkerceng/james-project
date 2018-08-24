@@ -106,6 +106,7 @@
         <module>task</module>
         <module>testing</module>
         <module>container/cli-components-api</module>
+        <module>container/cli-components</module>
     </modules>
 
     <properties>
