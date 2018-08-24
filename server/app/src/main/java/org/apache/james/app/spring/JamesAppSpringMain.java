@@ -58,10 +58,7 @@ public class JamesAppSpringMain implements Daemon {
     public void init(DaemonContext arg0) throws Exception {
         context = new JamesServerApplicationContext(new String[] { "META-INF/org/apache/james/spring-server.xml" });
         context.registerShutdownHook();
-        MailRepositoryStoreBeanFactory mailRepositoryStoreBeanFactory = context.getBean(MailRepositoryStoreBeanFactory.class);
-        Stream<MailRepositoryUrl> urls = mailRepositoryStoreBeanFactory.getUrls();
-        urls.forEach(url -> System.out.println(url));
-//        context.start();
+        context.start();
     }
 
     @Override
