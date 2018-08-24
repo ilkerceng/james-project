@@ -288,7 +288,10 @@
     <bean id="quotamanagermanagement" class="org.apache.james.adapter.mailbox.QuotaManagement"/>
     <bean id="reindexermanagement" class="org.apache.james.adapter.mailbox.ReIndexerManagement"/>
     <bean id="sievemanagerbean" class="org.apache.james.sieverepository.lib.SieveRepositoryManagement"/>
-    <bean id="mailreprocessingmanagement" class="org.apache.james.adapter.mailbox.MailReprocessingManagement"/>
+    <bean id="mailreprocessingmanagement" class="org.apache.james.cli.components.MailReprocessingManagement">
+        <constructor-arg index="0" ref="mailrepositorystore"/>
+        <constructor-arg index="1" ref="mailqueuefactory"/>
+    </bean>
 
     <!--
         <bean id="james23importermanagement" class="org.apache.james.container.spring.tool.James23ImporterManagement" />
