@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.adapter.mailbox;
+package org.apache.james.cli.components.api;
 
 import org.apache.mailet.Mail;
 
