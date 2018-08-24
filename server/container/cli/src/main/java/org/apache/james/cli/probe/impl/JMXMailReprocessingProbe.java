@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.james.cli.probe.impl;
 
-import org.apache.james.adapter.mailbox.MailReprocessingManagementMBean;
+import org.apache.james.cli.components.api.MailReprocessingManagementMBean;
 import org.apache.james.mailbox.store.probe.MailReprocessingProbe;
 import org.apache.mailet.Mail;
 
