@@ -47,12 +47,12 @@ public class WithPriority extends GenericMailet {
 
     @Override
     public void init() throws MessagingException {
-        priority = Optional.ofNullable(getInitParameter("priority", null))
+        priority = Optional.ofNullable(getInitParameter("value", null))
                 .map(Integer::valueOf)
-                .orElseThrow(() -> new IllegalArgumentException("'priority' init parameter is compulsory"));
+                .orElseThrow(() -> new IllegalArgumentException("'value' init parameter is compulsory"));
 
         if (priority < 0 || priority > 9) {
-            throw new IllegalArgumentException("Invalid priority: Priority should be from 0 to 9");
+            throw new IllegalArgumentException("Invalid priority value: Value for Priority should be from 0 to 9");
         }
     }
 
