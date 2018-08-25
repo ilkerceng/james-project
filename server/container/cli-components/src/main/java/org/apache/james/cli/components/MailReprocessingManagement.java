@@ -31,12 +31,6 @@ public class MailReprocessingManagement implements MailReprocessingManagementMBe
     public MailReprocessingManagement(MailRepositoryStore mailRepositoryStore, MailQueueFactory mailQueueFactory) {
         this.mailRepositoryStore = mailRepositoryStore;
         this.mailQueueFactory = mailQueueFactory;
-
-        try {
-            this.reprocessAllMails("var/mail/spam/");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
